@@ -5,6 +5,7 @@ using System.Reflection;
 using Microsoft.Extensions.DependencyModel;
 using System.Linq;
 using System.IO;
+using System.Reflection.Metadata;
 using System.Reflection.PortableExecutable;
 using Microsoft.Extensions.Options;
 
@@ -48,37 +49,25 @@ namespace RazorLight.Compilation
 
 		internal IReadOnlyList<MetadataReference> Resolve(Assembly assembly, DependencyContext dependencyContext)
 		{
-			var libraryPaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-			IEnumerable<string> references;
-			if (dependencyContext == null)
-			{
-				var context = new HashSet<string>();
-				var x = GetReferencedAssemblies(assembly, ExcludedAssemblies, context).Union(new[] { assembly }).ToArray();
-				references = x.Select(p => _directoryFormatter.GetAssemblyDirectory(p)).ToList();
-			}
-			else
-			{
-				references = dependencyContext.CompileLibraries.Where(x => !ExcludedAssemblies.Contains(x.Name)).SelectMany(library => library.ResolveReferencePaths()).ToList();
-
-				if (!references.Any())
-				{
-					throw new RazorLightException("Can't load metadata reference from the entry assembly. " +
-												  "Make sure PreserveCompilationContext is set to true in *.csproj file");
-				}
-			}
-
+			/*
+				by default this codes loads all dlls, referenced by "operation assembly" (entry assembly) 
+				dependency context's compile libs are empty in a single-file app.
+				to fix this, we just reference all assemblies from the current app domain 
+			*/
 			var metadataReferences = new List<MetadataReference>();
 
-			foreach (var reference in references)
+			unsafe
 			{
-				if (!libraryPaths.Add(reference)) continue;
-
-				using (var stream = File.OpenRead(reference))
+				foreach (var a in AppDomain.CurrentDomain.GetAssemblies())
 				{
-					var moduleMetadata = ModuleMetadata.CreateFromStream(stream, PEStreamOptions.PrefetchMetadata);
-					var assemblyMetadata = AssemblyMetadata.Create(moduleMetadata);
-
-					metadataReferences.Add(assemblyMetadata.GetReference(filePath: reference));
+					if (a.TryGetRawMetadata(out byte* blob, out var length))
+					{
+						var moduleMetadata = ModuleMetadata.CreateFromMetadata((IntPtr) blob, length);
+						var assemblyMetadata = AssemblyMetadata.Create(moduleMetadata);
+						var metadataReference = assemblyMetadata.GetReference();
+			
+						metadataReferences.Add(metadataReference);
+					}
 				}
 			}
 
@@ -100,9 +89,16 @@ namespace RazorLight.Compilation
 
 			foreach (var assemblyRef in a.GetReferencedAssemblies())
 			{
-				if (visitedAssemblies.Contains(assemblyRef.EscapedCodeBase)) { continue; }
+				if (visitedAssemblies.Contains(assemblyRef.EscapedCodeBase))
+				{
+					continue;
+				}
 
-				if (excludedAssemblies.Any(s => s.Contains(assemblyRef.Name))) { continue; }
+				if (excludedAssemblies.Any(s => s.Contains(assemblyRef.Name)))
+				{
+					continue;
+				}
+
 				var loadedAssembly = Assembly.Load(assemblyRef);
 				yield return loadedAssembly;
 				foreach (var referenced in GetReferencedAssemblies(loadedAssembly, excludedAssemblies, visitedAssemblies))
@@ -111,7 +107,5 @@ namespace RazorLight.Compilation
 				}
 			}
 		}
-
-	
 	}
 }
