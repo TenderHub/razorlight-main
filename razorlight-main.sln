@@ -11,6 +11,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RazorLight", "src\RazorLigh
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RazorLight.Tests", "tests\RazorLight.Tests\RazorLight.Tests.csproj", "{63EE1F3F-C71E-48DA-8135-9E602D6B7206}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sandbox", "sandbox", "{C9E24CCA-19BF-488A-BFC6-3CB86C18A819}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RazorLight.Sandbox", "sandbox\RazorLight.Sandbox\RazorLight.Sandbox.csproj", "{45FAF95F-9E6D-4273-A97E-83CDC9763A5B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -25,6 +29,10 @@ Global
 		{63EE1F3F-C71E-48DA-8135-9E602D6B7206}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{63EE1F3F-C71E-48DA-8135-9E602D6B7206}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{63EE1F3F-C71E-48DA-8135-9E602D6B7206}.Release|Any CPU.Build.0 = Release|Any CPU
+		{45FAF95F-9E6D-4273-A97E-83CDC9763A5B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{45FAF95F-9E6D-4273-A97E-83CDC9763A5B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{45FAF95F-9E6D-4273-A97E-83CDC9763A5B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{45FAF95F-9E6D-4273-A97E-83CDC9763A5B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -32,6 +40,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{CA780663-2714-43B0-89BC-BEB26BC5405A} = {25F57564-58FD-4FD2-8CDA-98261E5BEEEC}
 		{63EE1F3F-C71E-48DA-8135-9E602D6B7206} = {CDB1D407-71F7-44D6-8B35-F0013D1717A6}
+		{45FAF95F-9E6D-4273-A97E-83CDC9763A5B} = {C9E24CCA-19BF-488A-BFC6-3CB86C18A819}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {590C5541-E5A7-41ED-AFC7-D4A52E594191}

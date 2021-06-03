@@ -54,11 +54,21 @@ namespace RazorLight.Compilation
 				dependency context's compile libs are empty in a single-file app.
 				to fix this, we just reference all assemblies from the current app domain 
 			*/
+			
 			var metadataReferences = new List<MetadataReference>();
+			var assemblies = AppDomain
+				.CurrentDomain
+				.GetAssemblies()
+				.Union(new []
+				{
+					Assembly.Load("Microsoft.CSharp") // Used for templates with dynamic model
+				})
+				.Distinct()
+				.ToArray();
 
 			unsafe
 			{
-				foreach (var a in AppDomain.CurrentDomain.GetAssemblies())
+				foreach (var a in assemblies)
 				{
 					if (a.TryGetRawMetadata(out byte* blob, out var length))
 					{
