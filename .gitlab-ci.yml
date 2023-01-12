@@ -1,0 +1,12 @@
+image: registry.tenderhub.net/devops/docker/dotnet-sdk/sdk:latest #pommalabs/dotnet-mono:latest
+
+stages:
+  - build
+
+build:
+  stage: build
+  script:
+    - nuget sources add -Source "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/nuget/index.json" -Name gitlab -UserName gitlab-ci-token -Password $CI_JOB_TOKEN -StorePasswordInClearText
+    - python3 ./pack.py --source gitlab --api-username gitlab-ci-token --api-password $CI_JOB_TOKEN --project-id ${CI_PROJECT_ID} --api-url ${CI_API_V4_URL}
+  tags:
+    - k8s
